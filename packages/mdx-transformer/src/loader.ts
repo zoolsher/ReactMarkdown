@@ -15,7 +15,10 @@ type MdNode = RootContent | ParagraphChild | HeadingChild | FlowChild;
 type Text = Extract<MdNode, { type: "text" }>;
 type MdxAttribute = MdxJsxFlowElement["attributes"][number];
 type JsxAttribute = Extract<MdxAttribute, { type: "mdxJsxAttribute" }>;
-type JsxExpressionAttribute = Extract<MdxAttribute, { type: "mdxJsxExpressionAttribute" }>;
+type JsxExpressionAttribute = Extract<
+  MdxAttribute,
+  { type: "mdxJsxExpressionAttribute" }
+>;
 type AttributeValueExpression = Extract<
   JsxAttribute["value"],
   { type: "mdxJsxAttributeValueExpression" }
@@ -31,6 +34,19 @@ const mdxLoader: LoaderDefinition<undefined> = async function mdxLoader(
   this.cacheable?.();
   const callback = this.async();
 
+  const code = process(source);
+
+  this.emitFile("foo.md", code);
+
+  callback(
+    null,
+    `
+    export default ${JSON.stringify(code)}
+    `,
+  );
+};
+
+function process(source: string): string {
   const processor = createProcessor({
     format: "mdx",
     development: true,
@@ -42,15 +58,8 @@ const mdxLoader: LoaderDefinition<undefined> = async function mdxLoader(
     headers: [],
   });
 
-  this.emitFile("foo.md", code);
-
-  callback(
-    null,
-    `
-    export default ${JSON.stringify(code)}
-    `,
-  );
-};
+  return code;
+}
 
 export default mdxLoader;
 export const raw = false;
