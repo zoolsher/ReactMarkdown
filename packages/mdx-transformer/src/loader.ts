@@ -34,19 +34,15 @@ const mdxLoader: LoaderDefinition<undefined> = async function mdxLoader(
   this.cacheable?.();
   const callback = this.async();
 
-  const code = process(source);
+  const rendered = process(source);
+  const code = `export default ${JSON.stringify(rendered)};`;
 
-  this.emitFile("foo.md", code);
+  this.emitFile("foo.md", rendered);
 
-  callback(
-    null,
-    `
-    export default ${JSON.stringify(code)}
-    `,
-  );
+  callback(null, code);
 };
 
-function process(source: string): string {
+export function process(source: string): string {
   const processor = createProcessor({
     format: "mdx",
     development: true,
