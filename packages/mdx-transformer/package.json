@@ -27,6 +27,8 @@
 		"@rspack/core": "^1.5.3",
 		"@rstest/core": "catalog:",
 		"@types/node": "catalog:",
+		"@types/unist": "^3.0.3",
+		"remark": "^15.0.1",
 		"typescript": "catalog:"
 	},
 	"peerDependencies": {
